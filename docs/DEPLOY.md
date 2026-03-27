@@ -45,20 +45,26 @@ npm run dev -w web
 
 这样每次 PR 都能验证 **Dockerfile 与 compose 可构建**。
 
-### 2. CD：镜像发布
+### 2. CD：镜像发布（本仓库已配置 GHCR）
 
-常见做法：
+Workflow： [`.github/workflows/publish-docker.yml`](../.github/workflows/publish-docker.yml)
 
-1. **登录镜像仓库**（二选一或同时）  
-   - [GitHub Container Registry (ghcr.io)](https://docs.github.com/packages/container-registry)  
-   - Docker Hub  
+- **触发**：`push` 到 `main`、推送 `v*` 标签（如 `v1.0.0`）、或 **Actions** 里手动 **Run workflow**。  
+- **镜像**（`owner` 为小写）：  
+  - `ghcr.io/<owner>/goldpulse-api`（`latest`、`sha-<短 SHA>`；打 `v*` 标签时还有语义化版本标签）  
+  - `ghcr.io/<owner>/goldpulse-web`（同上）  
+- **认证**：使用仓库自带的 `GITHUB_TOKEN` 推送到 GHCR，**一般无需**再配 `GHCR_TOKEN` / Docker Hub 凭据（除非你要推到别的仓库）。  
+- **仓库变量**（**Settings → Secrets and variables → Actions → Variables**）：  
+  - **`NEXT_PUBLIC_API_BASE`**：浏览器访问的生产环境 API 根 URL（如 `https://api.example.com`）。未设置时 Workflow 里 Web 镜像仍用 `http://localhost:8000` 构建，并会在日志里提示；面向真实用户部署前请务必配置并重新跑一遍发布。  
+- **可见性**：首次推送后，在 GitHub 仓库 **Packages** 里把镜像设为 **Public**（若希望服务器匿名 `docker pull`），或保持 Private 并在服务器上 `docker login ghcr.io`。
 
-2. **在 Workflow 中**（`on: push` 到 `main` 或打 `tag`）：  
-   - `docker build` API、Web  
-   - `docker tag` / `docker push` 到 `ghcr.io/<org>/goldpulse-api:latest` 等  
+其他镜像仓库（Docker Hub 等）仍可自行增加 `docker login` / `docker push` 步骤，与上述并存。
 
-3. **Secrets**（在 GitHub 仓库 **Settings → Secrets and variables → Actions** 中配置）：  
-   - `GHCR_TOKEN` 或 `DOCKER_USERNAME` / `DOCKER_PASSWORD`（推送镜像用）
+### 2.1 与 Vercel、国内外 CDN 的配合（后续）
+
+- **Vercel**：前端用 Vercel 托管时，在 Vercel 项目环境变量中设置 **`NEXT_PUBLIC_API_BASE`** 为公网 API 地址（与后端一致）；API / 数据库继续用 Docker 或云主机即可，不必强依赖本仓库的 Web 镜像。  
+- **海外加速**：Vercel 自带全球边缘；自定义域名解析到 Vercel 即可。  
+- **国内 CDN**：可在自有域名上接阿里云 / 腾讯云等 CDN，源站仍指向 Vercel 或国内静态托管；注意 **WebSocket**（如 `/ws/quotes`）需按 CDN 文档开启回源长连接或绕过 CDN 直连 API 域名。同一套 API 地址应保持 **`NEXT_PUBLIC_API_BASE` 与证书、CORS 配置一致**。
 
 ### 3. CD：服务器拉取并运行
 
