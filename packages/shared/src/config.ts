@@ -11,7 +11,8 @@ export function buildQuotesWebSocketUrl(opts: BuildQuotesWsUrlOptions): string {
   if (opts.wsUrlOverride) {
     return opts.wsUrlOverride;
   }
-  const u = new URL(opts.apiBase);
+  const base = (opts.apiBase ?? "").trim();
+  const u = new URL(base || defaultApiBase);
   u.protocol = u.protocol === "https:" ? "wss:" : "ws:";
   u.pathname = "/ws/quotes";
   u.search = "";
