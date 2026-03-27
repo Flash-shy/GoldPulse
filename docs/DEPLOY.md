@@ -13,6 +13,17 @@ docker compose up --build
 - **FastAPI**：`http://localhost:8000`（Swagger：`/docs`）
 - **Next.js**：`http://localhost:3000`
 
+### 推荐：数据库 + API 用 Docker，前端用本地开发（热更新）
+
+若 Web 镜像构建较慢或需 Turbopack 热更新，可只起后端依赖与 API，Next 在本机跑：
+
+```bash
+docker compose up -d postgres redis api
+npm run dev -w web
+```
+
+浏览器打开 **http://localhost:3000** ，API 仍为 **http://localhost:8000**（与 `NEXT_PUBLIC_API_BASE` 默认一致）。
+
 前端在构建阶段会把 `NEXT_PUBLIC_API_BASE` 打进静态资源（浏览器里请求 API 与 WebSocket）。默认 Compose 里为 `http://localhost:8000`，若你把站点挂在域名或 HTTPS 后，请在 `docker-compose.yml` 的 `web.build.args` 中改成公网可访问的 API 地址并重新构建 Web 镜像。
 
 ## 统计脚本

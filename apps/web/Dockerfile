@@ -4,6 +4,7 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/mobile/package.json ./apps/mobile/
 COPY packages/shared/package.json ./packages/shared/
 RUN npm ci
 
@@ -15,8 +16,13 @@ ENV NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE}
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json ./
 COPY apps/web ./apps/web
+COPY apps/mobile/package.json ./apps/mobile/
 COPY packages/shared ./packages/shared
-RUN npm run build -w web
+# `COPY apps/web` overwrites workspace `apps/web/node_modules` from the deps stage; reinstall before build.
+RUN npm ci
+WORKDIR /app/apps/web
+RUN node ./node_modules/next/dist/bin/next build --webpack
+WORKDIR /app
 
 FROM node:22-alpine AS runner
 WORKDIR /app
