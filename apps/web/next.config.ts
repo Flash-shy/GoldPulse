@@ -3,7 +3,7 @@ import path from "node:path";
 
 const isGithubPages = process.env.GITHUB_PAGES === "true";
 
-/** GitHub project site: `user.github.io/<repo>/` needs basePath `/<repo>`. Custom domain root (e.g. `gold.example.com`) is served at `/` — use empty basePath (set `GITHUB_PAGES_BASE_PATH` to empty or `root` in CI). */
+/** GitHub project site: `user.github.io/<repo>/` needs basePath `/<repo>`. Custom domain root is served at `/` — CI sets env `GITHUB_PAGES_BASE_PATH` empty when repo Variable `PAGES_BASE_PATH` is `root`. */
 function resolveGithubPagesBasePath(): string {
   if (!isGithubPages) return "";
   const raw = process.env.GITHUB_PAGES_BASE_PATH;

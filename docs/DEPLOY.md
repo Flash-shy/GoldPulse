@@ -52,7 +52,7 @@ npm run dev -w web
 - 在 **Actions → Variables** 中配置 **`NEXT_PUBLIC_API_BASE`** 为公网 API 根 URL；未配置时打包结果仍指向默认本机地址，页面上无法连到真实后端。  
 - 自定义域名（如 `gold.sunhaoyang.net`）可在 **Settings → Pages → Custom domain** 里添加，再在 DNS 商处按 GitHub 提示配置 **CNAME**；可与腾讯云解析配合。  
   - **不要**把博客用的 `blog.sunhaoyang.net` 绑在 GoldPulse 上（会与博客/Vercel 冲突）；应新建子域（如 `gold` → `gold.sunhaoyang.net`），解析类型 **CNAME**、记录值 **`flash-shy.github.io`**（用户名小写）。  
-  - 使用「仅子域、根路径」托管时：在仓库 **Actions → Variables** 增加 **`GITHUB_PAGES_BASE_PATH`**，值为 **`root`**，再重新跑一次 **Deploy to GitHub Pages**（否则仍会按 `/GoldPulse` 打资源路径，自定义域下会白屏或 404）。继续用默认 `https://<你的用户名>.github.io/GoldPulse/` 时不要设置该变量。
+  - 使用「仅子域、根路径」托管时：在仓库 **Actions → Variables** 增加 **`PAGES_BASE_PATH`**（名称不能以 `GITHUB_` 开头），值为 **`root`**，再重新跑一次 **Deploy to GitHub Pages**（否则仍会按 `/GoldPulse` 打资源路径，自定义域下会白屏或 404）。继续用默认 `https://<你的用户名>.github.io/GoldPulse/` 时不要设置该变量。
 
 ### 1. CI：构建与校验（推荐先做）
 
