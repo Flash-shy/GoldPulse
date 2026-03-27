@@ -2,7 +2,17 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const isGithubPages = process.env.GITHUB_PAGES === "true";
-const pagesBasePath = process.env.GITHUB_PAGES_BASE_PATH ?? "";
+
+/** GitHub project site: `user.github.io/<repo>/` needs basePath `/<repo>`. Custom domain root (e.g. `gold.example.com`) is served at `/` — use empty basePath (set `GITHUB_PAGES_BASE_PATH` to empty or `root` in CI). */
+function resolveGithubPagesBasePath(): string {
+  if (!isGithubPages) return "";
+  const raw = process.env.GITHUB_PAGES_BASE_PATH;
+  if (raw === "" || raw === "root") return "";
+  if (raw) return raw.startsWith("/") ? raw : `/${raw}`;
+  return "/GoldPulse";
+}
+
+const pagesBasePath = resolveGithubPagesBasePath();
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@goldpulse/shared"],

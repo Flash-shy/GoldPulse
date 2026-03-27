@@ -31,12 +31,22 @@ jobs:
 
       - run: npm ci
 
+      # Default: basePath /GoldPulse for https://user.github.io/GoldPulse/
+      # If you use a custom domain (e.g. gold.sunhaoyang.net → CNAME to user.github.io), set repo Variable
+      # GITHUB_PAGES_BASE_PATH to "root" so assets load from site root (GitHub serves project site at / on that host).
       - name: Build static site
         env:
           GITHUB_PAGES: "true"
-          GITHUB_PAGES_BASE_PATH: /${{ github.event.repository.name }}
           NEXT_PUBLIC_API_BASE: ${{ vars.NEXT_PUBLIC_API_BASE }}
-        run: npm run build -w web
+          PAGES_BASE_MODE: ${{ vars.GITHUB_PAGES_BASE_PATH }}
+        run: |
+          REPO="${{ github.event.repository.name }}"
+          if [ "$PAGES_BASE_MODE" = "root" ]; then
+            export GITHUB_PAGES_BASE_PATH=
+          else
+            export GITHUB_PAGES_BASE_PATH="/${REPO}"
+          fi
+          npm run build -w web
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

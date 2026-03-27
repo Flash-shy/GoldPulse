@@ -46,10 +46,13 @@ npm run dev -w web
 **GitHub Pages（无 VPS 时托管前端）**
 
 - Workflow： [`.github/workflows/pages.yml`](../.github/workflows/pages.yml)，在 `push` 到 `main` 时构建 **Next 静态导出**（`output: "export"`）并部署。  
+- **私有仓库（免费账号）**：GitHub Pages **不会**显示「Build and deployment」，只会提示升级或改为公开。免费个人账号需将仓库 **设为 Public**（**Settings → General → Danger zone → Change visibility**）后，再到 **Settings → Pages** 才会出现 **Source** 选项。若必须保持私有，需 **GitHub Enterprise** 等付费方案才能启用 Pages。  
 - **首次启用**：仓库 **Settings → Pages → Build and deployment**，将 **Source** 设为 **GitHub Actions**（不要选 Deploy from a branch）。  
 - 站点地址：`https://<owner>.github.io/<仓库名>/`（项目页路径含仓库名，与构建时的 `basePath` 一致）。  
 - 在 **Actions → Variables** 中配置 **`NEXT_PUBLIC_API_BASE`** 为公网 API 根 URL；未配置时打包结果仍指向默认本机地址，页面上无法连到真实后端。  
-- 自定义域名（如 `goldpulse.sunhaoyang.net`）可在 **Settings → Pages → Custom domain** 里添加，再在 DNS 商处按 GitHub 提示配置 **CNAME**；可与腾讯云解析配合。
+- 自定义域名（如 `gold.sunhaoyang.net`）可在 **Settings → Pages → Custom domain** 里添加，再在 DNS 商处按 GitHub 提示配置 **CNAME**；可与腾讯云解析配合。  
+  - **不要**把博客用的 `blog.sunhaoyang.net` 绑在 GoldPulse 上（会与博客/Vercel 冲突）；应新建子域（如 `gold` → `gold.sunhaoyang.net`），解析类型 **CNAME**、记录值 **`flash-shy.github.io`**（用户名小写）。  
+  - 使用「仅子域、根路径」托管时：在仓库 **Actions → Variables** 增加 **`GITHUB_PAGES_BASE_PATH`**，值为 **`root`**，再重新跑一次 **Deploy to GitHub Pages**（否则仍会按 `/GoldPulse` 打资源路径，自定义域下会白屏或 404）。继续用默认 `https://<你的用户名>.github.io/GoldPulse/` 时不要设置该变量。
 
 ### 1. CI：构建与校验（推荐先做）
 
