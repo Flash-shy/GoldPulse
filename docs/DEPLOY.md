@@ -36,6 +36,21 @@ npm run dev -w web
 
 ## GitHub Actions 自动化部署思路
 
+### 0. GHCR 镜像与 GitHub Pages 静态站
+
+**容器镜像（GHCR）**
+
+- 在仓库主页右侧 **Packages**，或打开 `https://github.com/<你的用户名>?tab=packages`，可看到 `goldpulse-api`、`goldpulse-web` 等包。  
+- 拉取示例：`docker pull ghcr.io/<owner 小写>/goldpulse-web:latest`（私有包需先 `docker login ghcr.io`）。
+
+**GitHub Pages（无 VPS 时托管前端）**
+
+- Workflow： [`.github/workflows/pages.yml`](../.github/workflows/pages.yml)，在 `push` 到 `main` 时构建 **Next 静态导出**（`output: "export"`）并部署。  
+- **首次启用**：仓库 **Settings → Pages → Build and deployment**，将 **Source** 设为 **GitHub Actions**（不要选 Deploy from a branch）。  
+- 站点地址：`https://<owner>.github.io/<仓库名>/`（项目页路径含仓库名，与构建时的 `basePath` 一致）。  
+- 在 **Actions → Variables** 中配置 **`NEXT_PUBLIC_API_BASE`** 为公网 API 根 URL；未配置时打包结果仍指向默认本机地址，页面上无法连到真实后端。  
+- 自定义域名（如 `goldpulse.sunhaoyang.net`）可在 **Settings → Pages → Custom domain** 里添加，再在 DNS 商处按 GitHub 提示配置 **CNAME**；可与腾讯云解析配合。
+
 ### 1. CI：构建与校验（推荐先做）
 
 在仓库中配置 Workflow（示例见 `.github/workflows/ci.yml`）：
