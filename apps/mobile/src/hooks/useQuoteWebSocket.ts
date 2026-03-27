@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 
 import { parseQuoteMessage, type QuoteMessage, type WsStatus } from "@goldpulse/shared";
@@ -36,11 +34,9 @@ export function useQuoteWebSocket(wsUrl: string) {
       ws.onmessage = (ev) => {
         try {
           const data = parseQuoteMessage(JSON.parse(ev.data as string));
-          if (data) {
-            setQuote(data);
-          }
+          if (data) setQuote(data);
         } catch {
-          /* ignore malformed */
+          /* ignore */
         }
       };
 

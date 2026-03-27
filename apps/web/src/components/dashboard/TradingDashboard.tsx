@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LayoutDashboard, LineChart } from "lucide-react";
 import type { CandlestickData } from "lightweight-charts";
 
+import { fetchPriceHistory } from "@goldpulse/shared";
+
 import { API_BASE, getQuotesWebSocketUrl } from "@/lib/env";
 import {
   aggregateHistoryToCandles,
@@ -40,9 +42,7 @@ export function TradingDashboard() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/v1/quotes/history?limit=500`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const rows = (await res.json()) as { recorded_at: string; mid: string }[];
+        const rows = await fetchPriceHistory({ baseUrl: API_BASE, limit: 500 });
         if (cancelled) return;
         const candles = aggregateHistoryToCandles(rows, DEFAULT_INTERVAL_SEC);
         setHistoryCandles(candles);

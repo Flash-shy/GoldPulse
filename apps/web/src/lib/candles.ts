@@ -2,7 +2,7 @@ import type { CandlestickData, UTCTimestamp } from "lightweight-charts";
 
 export const DEFAULT_INTERVAL_SEC = 60;
 
-export type HistoryRow = { recorded_at: string; mid: string };
+export type HistoryRow = { recorded_at: string; mid: string | number };
 
 /** Group backend ticks into OHLC candles by fixed time buckets. */
 export function aggregateHistoryToCandles(
@@ -13,7 +13,7 @@ export function aggregateHistoryToCandles(
   for (const r of rows) {
     const t = Math.floor(new Date(r.recorded_at).getTime() / 1000);
     const bucket = Math.floor(t / intervalSec) * intervalSec;
-    const m = parseFloat(r.mid);
+    const m = parseFloat(String(r.mid));
     if (Number.isNaN(m)) continue;
     if (!groups.has(bucket)) groups.set(bucket, []);
     groups.get(bucket)!.push(m);

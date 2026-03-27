@@ -2,7 +2,7 @@
 
 import { Activity } from "lucide-react";
 
-import type { QuoteMessage, WsStatus } from "@/hooks/useQuoteWebSocket";
+import type { QuoteMessage, WsStatus } from "@goldpulse/shared";
 
 type Props = {
   quote: QuoteMessage | null;
