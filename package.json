@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "docker compose up -d postgres redis && npx --yes concurrently@9 -k -n api,web -c blue,magenta \"npm run dev:api\" \"npm run dev:web\"",
     "dev:web": "npm run dev -w web",
     "dev:mobile": "npm run start -w mobile",
     "dev:api": "cd backend && .venv/bin/uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
